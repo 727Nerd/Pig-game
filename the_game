@@ -1,0 +1,135 @@
+#Q642
+import time
+import random
+class character():
+    def __init__(self):
+        self.name = ""
+        self.score = 0
+        self.roll = 0
+        self.algoturn = -1 #How many times algorithm wants player to roll; OR the minimum value that the algorithm wants to roll; -1 if human
+    def roll_dice(self):
+        self.roll = random.randint(1,6)
+        
+    
+class game():
+    def __init__(self):
+        self.turncounter = 1
+        ai_charone = character() #4-3-4-3-4-3-4-3-...
+        ai_charone.name = "John's algorithm (N)" #(N) means non-spontaneous i.e. it's decisions are not based on current score, but instead already decided before game.
+        ai_charone.algoturn = 4
+        ai_chartwo = character() #4-3-4-3-4-3-4-3-...
+        ai_chartwo.name = "Rian's algorithm (S)" #(N) means non-spontaneous i.e. it's decisions are not based on current score, but instead already decided before game.
+        ai_chartwo.algoturn = 10
+        playerone  = character()
+        playerone.name = input("What's your name?")
+        self.charlist = [ai_charone,ai_chartwo]
+        self.gameon() #Starts game
+
+    def one_go(self,player):
+        if player.algoturn == -1: #This means that there is no algorithm - it is a human.
+            ongoing = True
+            score = 0
+            print('-'*40)
+            print(f"Hello, player {player.name}!")
+            while ongoing:
+                x = input("Do you want to roll (y/n)?")
+                if x.lower() == 'y':
+                    player.roll_dice()
+                    score += player.roll #ROlls dice
+                    if player.roll == 1:
+                        ongoing = False #Turn ends if 1 is rolled
+                        score = 0
+                        print("Unfortunately, ",end="")
+            
+                    print(f"You rolled a {player.roll}; Score this turn: {score}; Altogether, you have: {player.score + score}")
+                    time.sleep(0.5)
+                else:
+                    ongoing = False
+            player.score += score #Adding turn's score to total score for player
+            print('-'*40)
+            print(f"|Turn over; {player.name} has {player.score} points|")
+            time.sleep(2)
+        elif player.name[-3:] == '(N)':
+            print('-'*40)
+            print(f"Hello, player {player.name} (COMP)!")
+            score = 0
+            for i in range(player.algoturn): #Algorithm will roll dice {player.algoturn} times (unless it rolls a 1)
+                player.roll_dice()
+                score += player.roll
+                if player.roll == 1: #Turn ends if a 1 is rolled
+                    score = 0
+                    print(f"{player.name} rolled a {player.roll}, leaving it with {score} points this turn - altogether, {player.name} has {player.score+score} points.")
+                    time.sleep(1)
+                    break
+                print(f"{player.name} rolled a {player.roll}, leaving it with {score} points this turn - altogether, {player.name} has {player.score+score} points.")
+                time.sleep(0.5)
+            player.score += score #Adds turn's score to total score
+            print('-'*40)
+            print(f"|Turn over; {player.name} has {player.score} points|")
+            time.sleep(2)
+            if player.name == "John's algorithm (N)":
+                player.algoturn = (4 if player.algoturn == 3 else 3) #Algorithm = 4-3-4-3-4-3-4-3-... for Mr. Slater's algortihm
+
+        elif player.name[-3:] == '(S)':
+            ongoing = True
+            score = 0
+            print('-'*40)
+            print(f"Hello, player {player.name} (COMP)!")
+            while ongoing:
+                if score < player.algoturn: #Algorithm will roll until it has scored a certain number of points in the turn (or until it rolls a 1 - :) )
+                    player.roll_dice()
+                    score += player.roll
+                    if player.roll == 1: #Turn ends if a 1 is rolled
+                        ongoing = False
+                        score = 0
+                        print("Unfortunately, ",end="")
+            
+                    print(f"{player.name} rolled a {player.roll}, leaving it with {score} points this turn - altogether, {player.name} has {player.score+score} points.")
+                    time.sleep(0.5)
+                else:
+                    ongoing = False
+            player.score += score #Adds turn's score to total score.
+            #WE CAN CHANGE PLAYER.ALGOTURN
+            print('-'*40)
+            print(f"|Turn over; {player.name} has {player.score} points|")
+            time.sleep(2)
+                
+
+    def gameon(self):
+        while self.charlist[0].score < 100 and self.charlist[1].score < 100 and self.turncounter < 60: #Scores are lower than 100 means that game is still going
+            self.one_go(self.charlist[self.turncounter%2]) #Gives a player their turn
+            self.turncounter = self.turncounter + 1 #Changes the player + increments the number of turns of the game altogether,
+
+        if self.charlist[0].score >= 100: #You win if you get more than 100 points.
+            print(f"Well done on winning, {self.charlist[0].name}")
+
+        elif self.charlist[1].score >= 100:
+            print(f"Well done on winning, {self.charlist[1].name}")
+
+        else:
+            print("The game was too boring, I had to break it! The winner was, however,", self.charlist[0].name if self.charlist[0].score >= self.charlist[1].score else self.charlist[1].name)
+            #TOO MANY TURNS!!!
+
+
+letsgo = game()
+
+        
+        
+        
+##human = character()
+##human.name = input("What is your name?")
+#John's strategy: 4-3-4-3-4-3-4
+#1-2-3-4-5-4-3-2-1-2-3...
+
+
+
+
+
+
+
+
+
+
+
+
+
